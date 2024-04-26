@@ -15,14 +15,12 @@ int main() {
     char buffer[BUFFER_SIZE] = { 0 };
     const char* confirmation = "Message received";
 
-    // Create a socket
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("Socket creation failed");
+    if ((server_fd = socket(PF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket creation failed\n");
         return -1;
     }
 
-    // Set socket options
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
         perror("Setsockopt failed");
         return -1;
     }
@@ -31,19 +29,16 @@ int main() {
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
 
-    // Bind the socket to localhost and the specified port
     if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
         perror("Bind failed");
         return -1;
     }
 
-    // Start listening for incoming connections
     if (listen(server_fd, 3) < 0) {
         perror("Listen failed");
         return -1;
     }
 
-    // Accept incoming connection
     if ((new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen)) < 0) {
         perror("Accept failed");
         return -1;
@@ -52,7 +47,6 @@ int main() {
     while (true) {
         memset(buffer, 0, BUFFER_SIZE);
 
-        // Receive message from client
         int valread = read(new_socket, buffer, BUFFER_SIZE);
 
         if (valread == 0) {
@@ -62,7 +56,6 @@ int main() {
 
         std::cout << "Message from client: " << buffer << std::endl;
 
-        // Send confirmation back to client
         send(new_socket, confirmation, strlen(confirmation), 0);
     }
 
