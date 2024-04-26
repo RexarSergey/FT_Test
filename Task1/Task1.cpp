@@ -1,20 +1,62 @@
-// Task1.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <string>
+#include <unordered_map>
+#include <memory>
+#include <format>
+
+struct Student
+{
+	int id;
+	std::string name;
+	int age;
+};
+
+class DB_Class
+{
+public:
+	void AddStudent(int id, std::string name, int age)
+	{
+		students.insert({ id, std::make_unique<Student>(Student{id, name, age}) });
+	}
+
+	void DeleteStudentByID(int id)
+	{
+		if (!students.contains(id))
+		{
+			std::cout << "<<DeleteStudentByID>> The is no student with id: " << id << '\n';
+			return;
+		}
+
+		students.erase(id);
+	}
+
+	void GetStudentInfoByID(int id)
+	{
+		if (!students.contains(id))
+		{
+			std::cout << "<<GetStudentInfoByID>> The is no student with id: " << id << '\n';
+			return;
+		}
+
+		Student* student = students[id].get();
+		std::cout << std::format("Student ID: {0}\nStudent Name: {1}\nStudent Age: {2}\n\n",
+			student->id, student->name, student->age);
+	}
+
+private:
+	std::unordered_map<int, std::unique_ptr<Student>> students;
+};
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	DB_Class db;
+
+	db.AddStudent(1, "Lena", 14);
+	db.GetStudentInfoByID(1);
+	db.DeleteStudentByID(1);
+
+	db.GetStudentInfoByID(1);
+	db.GetStudentInfoByID(1);
+
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
