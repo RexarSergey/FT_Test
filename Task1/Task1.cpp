@@ -30,7 +30,7 @@ public:
 		students.erase(id);
 	}
 
-	void GetStudentInfoByID(int id)
+	Student* GetStudentInfoByID(int id)
 	{
 		if (!students.contains(id))
 		{
